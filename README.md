@@ -70,6 +70,15 @@ This project demonstrates:
 
 ---
 
+## 🌍 Live Demo
+https://job-portal-backend-p580.onrender.com
+
+## 🔑 How to Test
+
+1. Register: POST /api/register/
+2. Login: POST /api/token/
+3. Use access token as Bearer Token
+
 ## 👨‍💻 Developed By
 
 Sachin Kumar
