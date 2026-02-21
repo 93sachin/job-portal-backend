@@ -5,9 +5,10 @@ from .models import Application
 class ApplicationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Application
-        fields = "__all__"
-        read_only_fields = ["applicant", "applied_at"]
+        fields = ["id", "job", "applied_at"]
+        read_only_fields = ["id", "applied_at"]
 
     def create(self, validated_data):
-        validated_data["applicant"] = self.context["request"].user
+        request = self.context.get("request")
+        validated_data["applicant"] = request.user
         return super().create(validated_data)
