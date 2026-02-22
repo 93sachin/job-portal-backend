@@ -137,7 +137,7 @@ REST_FRAMEWORK = {
     ),
 }
 
-CORS_ALLOW_ALL_ORIGINS = [
+CORS_ALLOWED_ORIGINS = [
     "https://job-portal-frontend-2rns-5b6ehr1sq.vercel.app",
 ]
 
