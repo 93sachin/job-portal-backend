@@ -43,3 +43,7 @@ class UpdateApplicationStatusView(UpdateAPIView):
     serializer_class = ApplicationSerializer
     permission_classes = [IsAuthenticated, IsRecruiter]
 
+class AllApplicationsView(ListAPIView):
+    queryset = Application.objects.all()
+    serializer_class = ApplicationSerializer
+    permission_classes = [IsAuthenticated, IsRecruiter]
