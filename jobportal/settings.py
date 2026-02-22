@@ -137,8 +137,9 @@ REST_FRAMEWORK = {
     ),
 }
 
-CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_ALL_ORIGINS = [
+    "https://job-portal-frontend-2rns-5b6ehr1sq.vercel.app",
+]
 
 CORS_ALLOW_HEADERS = [
     "accept",
@@ -149,9 +150,11 @@ CORS_ALLOW_HEADERS = [
     "x-requested-with",
 ]
 
-# CSRF_TRUSTED_ORIGINS = [
-#     "http://localhost:3000",
-# ]
+CORS_ALLOW_CREDENTIALS = True
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://job-portal-frontend-2rns-5b6ehr1sq.vercel.app",
+]
 
 from datetime import timedelta
 
