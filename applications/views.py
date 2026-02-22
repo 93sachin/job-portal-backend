@@ -1,30 +1,26 @@
-from rest_framework import generics, permissions, status
+from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import status
+from django.shortcuts import get_object_or_404
 from .models import Application
-from .serializers import ApplicationSerializer
+from jobs.models import Job
 
+class ApplyJobView(APIView):
+    permission_classes = [IsAuthenticated]
 
-class ApplyJobView(generics.CreateAPIView):
-    serializer_class = ApplicationSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def create(self, request, *args, **kwargs):
+    def post(self, request):
         job_id = request.data.get("job")
 
-        if Application.objects.filter(
-            applicant=request.user,
-            job_id=job_id
-        ).exists():
-            return Response(
-                {"message": "Already applied"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+        if not job_id:
+            return Response({"error": "Job ID required"}, status=400)
 
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save(applicant=request.user)
+        job = get_object_or_404(Job, id=job_id)
 
-        return Response(
-            {"message": "Application submitted successfully"},
-            status=status.HTTP_201_CREATED
-        )
+        # Check duplicate
+        if Application.objects.filter(user=request.user, job=job).exists():
+            return Response({"message": "Already applied"}, status=400)
+
+        Application.objects.create(user=request.user, job=job)
+
+        return Response({"message": "Applied successfully"}, status=201)
