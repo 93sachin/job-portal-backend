@@ -17,10 +17,10 @@ class ApplyJobView(APIView):
 
         job = get_object_or_404(Job, id=job_id)
 
-        # Check duplicate
-        if Application.objects.filter(user=request.user, job=job).exists():
+    # Correct field name: applicant
+        if Application.objects.filter(applicant=request.user, job=job).exists():
             return Response({"message": "Already applied"}, status=400)
 
-        Application.objects.create(user=request.user, job=job)
+        Application.objects.create(applicant=request.user, job=job)
 
         return Response({"message": "Applied successfully"}, status=201)
