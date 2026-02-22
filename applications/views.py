@@ -29,10 +29,17 @@ from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from .models import Application
 from .serializers import ApplicationSerializer
+from rest_framework.generics import UpdateAPIView
+from .permissions import IsRecruiter
                                                                 
 class MyApplicationsView(ListAPIView):
     serializer_class = ApplicationSerializer
     permission_classes = [IsAuthenticated]
+
+class UpdateApplicationStatusView(UpdateAPIView):
+    queryset = Application.objects.all()
+    serializer_class = ApplicationSerializer
+    permission_classes = [IsAuthenticated, IsRecruiter]
 
     def get_queryset(self):
         return Application.objects.filter(applicant=self.request.user)
