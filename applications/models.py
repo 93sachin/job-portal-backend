@@ -11,6 +11,16 @@ class Application(models.Model):
         Job,
         on_delete=models.CASCADE
     )
+    status = models.CharField(
+    max_length=20,
+    choices=[
+        ('PENDING', 'Pending'),
+        ('SHORTLISTED', 'Shortlisted'),
+        ('REJECTED', 'Rejected'),
+        ('SELECTED', 'Selected'),
+    ],
+    default='PENDING'
+)
     applied_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
