@@ -133,11 +133,12 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.IsAuthenticated',
     ),
 }
 
 CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOW_HEADERS = [
     "accept",
@@ -148,9 +149,9 @@ CORS_ALLOW_HEADERS = [
     "x-requested-with",
 ]
 
-CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:3000",
-]
+# CSRF_TRUSTED_ORIGINS = [
+#     "http://localhost:3000",
+# ]
 
 from datetime import timedelta
 
