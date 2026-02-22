@@ -24,3 +24,15 @@ class ApplyJobView(APIView):
         Application.objects.create(applicant=request.user, job=job)
 
         return Response({"message": "Applied successfully"}, status=201)
+
+from rest_framework.generics import ListAPIView
+from rest_framework.permissions import IsAuthenticated
+from .models import Application
+from .serializers import ApplicationSerializer
+
+class MyApplicationsView(ListAPIView):
+    serializer_class = ApplicationSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Application.objects.filter(applicant=self.request.user)
