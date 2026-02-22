@@ -35,11 +35,11 @@ from .permissions import IsRecruiter
 class MyApplicationsView(ListAPIView):
     serializer_class = ApplicationSerializer
     permission_classes = [IsAuthenticated]
+    def get_queryset(self):
+        return Application.objects.filter(applicant=self.request.user)
 
 class UpdateApplicationStatusView(UpdateAPIView):
     queryset = Application.objects.all()
     serializer_class = ApplicationSerializer
     permission_classes = [IsAuthenticated, IsRecruiter]
 
-    def get_queryset(self):
-        return Application.objects.filter(applicant=self.request.user)
