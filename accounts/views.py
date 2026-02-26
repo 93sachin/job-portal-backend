@@ -24,3 +24,9 @@ def profile_view(request):
         "email": user.email,
         "id": user.id
     })
+
+from rest_framework_simplejwt.views import TokenObtainPairView
+from .serializers import CustomTokenObtainPairSerializer
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer

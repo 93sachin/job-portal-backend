@@ -11,13 +11,14 @@ class Application(models.Model):
         Job,
         on_delete=models.CASCADE
     )
+    resume = models.FileField(upload_to="resumes/", null=True, blank=True)
+    
     status = models.CharField(
     max_length=20,
     choices=[
         ('PENDING', 'Pending'),
         ('SHORTLISTED', 'Shortlisted'),
         ('REJECTED', 'Rejected'),
-        ('SELECTED', 'Selected'),
     ],
     default='PENDING'
 )
@@ -28,3 +29,5 @@ class Application(models.Model):
 
     def __str__(self):
         return f"{self.applicant.username} - {self.job.title}"
+    
+    is_viewed = models.BooleanField(default=False)
