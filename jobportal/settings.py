@@ -155,8 +155,7 @@ CORS_ALLOW_HEADERS = [
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
+    "https://job-portal-frontend-2rns-et90s438z.vercel.app",
 ]
 
 CSRF_TRUSTED_ORIGINS = [
