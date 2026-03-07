@@ -1,9 +1,9 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import Job
 from applications.models import Application
-from rest_framework import status
+# from rest_framework import status
 from .serializers import JobSerializer
 
 class CreateJobView(APIView):
@@ -20,7 +20,7 @@ class CreateJobView(APIView):
         return Response(serializer.errors)
 
 class JobListView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get(self, request):
         jobs = Job.objects.all()
