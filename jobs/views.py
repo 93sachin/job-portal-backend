@@ -20,6 +20,7 @@ class CreateJobView(APIView):
         return Response(serializer.errors)
 
 class JobListView(APIView):
+    authentication_classes = []
     permission_classes = [AllowAny]
 
     def get(self, request):
