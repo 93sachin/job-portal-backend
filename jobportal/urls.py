@@ -26,5 +26,5 @@ urlpatterns = [
     path('api/', include('api.urls')),
     path('api/applications/', include('applications.urls')),
     path('api/', include('accounts.urls')),
-    path('api/jobs/', include('jobs.urls')),
+    path('api/', include('jobs.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
