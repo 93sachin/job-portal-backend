@@ -35,4 +35,7 @@ class ApplicationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Application
         fields = '__all__'
-       
+        extra_kwargs = {
+            'student': {'required': False},
+            'job': {'required': False}
+        }
