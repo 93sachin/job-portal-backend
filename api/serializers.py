@@ -31,7 +31,8 @@ class JobSerializer(serializers.ModelSerializer):
 from applications.models import Application
 
 class ApplicationSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source="student.username", read_only=True)
     class Meta:
         model = Application
         fields = '__all__'
-        read_only_fields = ['student', 'Job']
+       
