@@ -31,11 +31,11 @@ class JobSerializer(serializers.ModelSerializer):
 from applications.models import Application
 
 class ApplicationSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(source="student.username", read_only=True)
+    username = serializers.CharField(source="applicant.username", read_only=True)
     class Meta:
         model = Application
         fields = '__all__'
         extra_kwargs = {
-            'student': {'required': False},
+            'applicant': {'required': False},
             'job': {'required': False}
         }
