@@ -4,8 +4,10 @@ from .views import ApplyJobView
 from .views import StudentApplicationsView
 from .views import UpdateApplicationStatusView
 from .views import RecruiterApplicantsView
+from .views import CustomTokenView
 
 urlpatterns = [
+    path('token/', CustomTokenView.as_view(), name='token'),
     path('register/', RegisterView.as_view(), name='register'),
     path('create-job/', CreateJobView.as_view(), name='create-job'),
     path('jobs/', JobListView.as_view(), name='job-list'),
