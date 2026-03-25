@@ -1,7 +1,11 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view, permission_classes
 
+from accounts.models import User
+
+# 🔐 Current User (JWT required)
 class CurrentUserView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -11,10 +15,8 @@ class CurrentUserView(APIView):
             "role": request.user.role
         })
 
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
 
+# 🔐 Profile API (JWT required)
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def profile_view(request):
@@ -24,6 +26,20 @@ def profile_view(request):
         "email": user.email,
         "id": user.id
     })
+
+
+# 🧠 IMPORTANT: USER CREATE API (TEMP FIX)
+@api_view(['GET'])
+def create_user(request):
+    if not User.objects.filter(username="admin").exists():
+        user = User.objects.create_user(
+            username="admin",
+            password="admin123"
+        )
+        user.role = "recruiter"  # 👈 agar role field hai
+        user.save()
+        return Response({"msg": "User created"})
+    return Response({"msg": "User already exists"})
 
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import CustomTokenObtainPairSerializer

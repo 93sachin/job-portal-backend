@@ -6,13 +6,17 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def get_token(cls, user):
         token = super().get_token(user)
 
-        # Add role inside token
+        # 👇 token ke andar extra data
         token['role'] = user.role
+        token['username'] = user.username
+
         return token
 
     def validate(self, attrs):
         data = super().validate(attrs)
 
-        # Send role in response also
+        # 👇 response me bhi bhej denge
         data['role'] = self.user.role
+        data['username'] = self.user.username
+
         return data
