@@ -3,6 +3,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import Job
 from applications.models import Application
+from django.shortcuts import get_object_or_404
+from django.db.models import Count, Q
 # from rest_framework import status
 from .serializers import JobSerializer
 
@@ -10,14 +12,29 @@ class CreateJobView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        if request.user.role != "recruiter":
-            return Response({"error": "Only recruiters can post jobs"})
 
+    # 🔐 role check
+        if request.user.role != "recruiter":
+            return Response({"error": "Only recruiters can post jobs"}, status=403)
+
+    # 🔥 validation yaha add karni hai 👇
+        if not request.data.get("title"):
+            return Response({"error": "Title is required"}, status=400)
+
+        if not request.data.get("description"):
+            return Response({"error": "Description is required"}, status=400)
+
+        if not request.data.get("company"):
+            return Response({"error": "Company is required"}, status=400)
+
+    # 👇 serializer yaha se start hoga
         serializer = JobSerializer(data=request.data)
+
         if serializer.is_valid():
             serializer.save(created_by=request.user)
             return Response(serializer.data)
-        return Response(serializer.errors)
+
+        return Response(serializer.errors, status=400)
 
 class JobListView(APIView):
     authentication_classes = []
@@ -28,30 +45,29 @@ class JobListView(APIView):
         serializer = JobSerializer(jobs, many=True)
         return Response(serializer.data)
     
+
 class MyJobsView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        jobs = Job.objects.filter(created_by=request.user)
+        jobs = Job.objects.filter(created_by=request.user).annotate(
+            total_applications=Count('application'),
+            new_applications=Count(
+                'application',
+                filter=Q(application__is_viewed=False)
+            )
+        )
 
         data = []
 
         for job in jobs:
-            new_apps = Application.objects.filter(
-                job=job,
-                is_viewed=False
-            ).count()
-
-            total_apps = Application.objects.filter(job=job).count()
-
-
             data.append({
                 "id": job.id,
                 "title": job.title,
                 "description": job.description,
                 "company": job.company,
-                "new_applications": new_apps,
-                "total_applications": total_apps
+                "new_applications": job.new_applications,
+                "total_applications": job.total_applications
             })
 
         return Response(data)
@@ -61,7 +77,7 @@ class DeleteJobView(APIView):
 
     def delete(self, request, pk):
         try:
-            job = Job.objects.get(id=pk)
+            job = get_object_or_404(Job, id=pk)
 
             # Optional: sirf jisne banaya wahi delete kare
             if job.created_by != request.user:
@@ -78,7 +94,7 @@ class UpdateJobView(APIView):
 
     def put(self, request, pk):
         try:
-            job = Job.objects.get(id=pk)
+            job = get_object_or_404(Job, id=pk)
 
             # Security check
             if job.created_by != request.user:
@@ -98,7 +114,7 @@ class JobApplicationsView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, pk):
-        job = Job.objects.get(id=pk)
+        job = get_object_or_404(Job, id=pk)
 
         # Sirf jisne job banayi wahi dekh sake
         if job.created_by != request.user:
@@ -136,21 +152,40 @@ class UpdateApplicationStatusView(APIView):
     permission_classes = [IsAuthenticated]
 
     def put(self, request, pk):
-        try:
-            application = Application.objects.get(id=pk)
 
-            # Security check – sirf job ka recruiter hi update kare
-            if application.job.created_by != request.user:
-                return Response({"error": "Not allowed"}, status=403)
+        # 🔹 safe way (no crash)
+        application = get_object_or_404(Application, id=pk)
 
-            status_value = request.data.get("status")
-            application.status = status_value
-            application.save()
+        # 🔐 security check
+        if application.job.created_by != request.user:
+            return Response({"error": "Not allowed"}, status=403)
 
-            return Response({"message": "Status updated"})
+        # 🔥 status value le
+        status_value = request.data.get("status")
 
-        except Application.DoesNotExist:
-            return Response({"error": "Application not found"}, status=404)
+        # ❌ agar status hi nahi bheja
+        if not status_value:
+            return Response({"error": "Status is required"}, status=400)
+
+        # 🔥 valid status list
+        valid_status = ["PENDING", "SHORTLISTED", "REJECTED"]
+
+        # ❌ invalid value
+        if status_value not in valid_status:
+            return Response({
+                "error": "Invalid status",
+                "allowed": valid_status
+            }, status=400)
+
+        # ✅ save
+        application.status = status_value
+        application.save()
+
+        return Response({
+            "success": True,
+            "message": "Status updated successfully",
+            "status": application.status
+        })
         
 class RecruiterAnalyticsView(APIView):
     permission_classes = [IsAuthenticated]

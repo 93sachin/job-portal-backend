@@ -18,20 +18,23 @@ class ApplyJobView(APIView):
 
         job = get_object_or_404(Job, id=job_id)
 
+        if request.user.role != "student":
+            return self.response({"error": "Only student can apply"}, status=403)
+
     # Correct field name: applicant
         if Application.objects.filter(applicant=request.user, job=job).exists():
-            return Response({"message": "Already applied"}, status=400)
+            return Response({"message": "You have already applied for this job"}, status=400)
 
         Application.objects.create(applicant=request.user, job=job, resume=resume)
 
-        return Response({"message": "Applied successfully"}, status=201)
+        return Response({"success": True, 
+                         "message": "Applied successfully"}, status=201)
 
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from .models import Application
 from .serializers import ApplicationSerializer
 from rest_framework.generics import UpdateAPIView
-from .permissions import IsRecruiter
 
 # Student : MyApplications                                                            
 class MyApplicationsView(ListAPIView):
