@@ -87,7 +87,6 @@ DATABASES = {
     'default': dj_database_url.config()
 }
 
-PORT = int(os.environ.get("PORT", 8000))
 
 
 # Password validation
